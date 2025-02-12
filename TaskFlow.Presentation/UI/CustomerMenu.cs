@@ -76,29 +76,104 @@ namespace TaskFlow.Presentation.UI
 
         private async Task AddNewCustomer()
         {
-            Console.Clear();
-            Console.WriteLine("=== Add New Customer ===\n");
-
-            Console.Write("Customer Name: ");
-            var name = Console.ReadLine()?.Trim();
-
-            Console.Write("Email: ");
-            var email = Console.ReadLine()?.Trim();
-
-            var request = new CreateCustomerRequest { Name = name, Email = email };
-
-            var result = await _customerService.CreateAsync(request);
-            if (result.Success)
+            try
             {
-                Console.WriteLine($"\nSuccess: Customer created successfully");
-            }
-            else
-            {
-                Console.WriteLine($"\nError: {result.Message}");
-            }
+                ConsoleUIHelper.DrawBox("Add New Customer");
 
-            Console.WriteLine("\nPress any key to continue...");
-            Console.ReadKey();
+                // Get customer name with validation
+                string name;
+                do
+                {
+                    name = ConsoleUIHelper.GetInput("Customer Name", ConsoleColor.Cyan).Trim();
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        ConsoleUIHelper.DisplayError(
+                            "Customer name cannot be empty. Please try again."
+                        );
+                    }
+                } while (string.IsNullOrEmpty(name));
+
+                // Get email with validation
+                string email;
+                do
+                {
+                    email = ConsoleUIHelper.GetInput("Email", ConsoleColor.Cyan).Trim();
+                    if (string.IsNullOrEmpty(email))
+                    {
+                        ConsoleUIHelper.DisplayError("Email cannot be empty. Please try again.");
+                        continue;
+                    }
+                    if (!email.Contains("@") || !email.Contains("."))
+                    {
+                        ConsoleUIHelper.DisplayError("Invalid email format. Please try again.");
+                        continue;
+                    }
+                    break;
+                } while (true);
+
+                // Get phone number with validation
+                string phoneNumber;
+                do
+                {
+                    phoneNumber = ConsoleUIHelper
+                        .GetInput("Phone Number", ConsoleColor.Cyan)
+                        .Trim();
+                    if (string.IsNullOrEmpty(phoneNumber))
+                    {
+                        ConsoleUIHelper.DisplayError("Phone number is required. Please try again.");
+                        continue;
+                    }
+                    if (!phoneNumber.All(c => char.IsDigit(c) || c == '+' || c == '-' || c == ' '))
+                    {
+                        ConsoleUIHelper.DisplayError(
+                            "Invalid phone number format. Please use only digits, +, -, and spaces."
+                        );
+                        continue;
+                    }
+                    if (phoneNumber.Count(c => char.IsDigit(c)) < 8)
+                    {
+                        ConsoleUIHelper.DisplayError(
+                            "Phone number must contain at least 8 digits."
+                        );
+                        continue;
+                    }
+                    break;
+                } while (true);
+
+                ConsoleUIHelper.ShowLoadingSpinner(
+                    "Creating customer",
+                    async () =>
+                    {
+                        var request = new CreateCustomerRequest
+                        {
+                            Name = name,
+                            Email = email,
+                            PhoneNumber = phoneNumber,
+                        };
+
+                        var result = await _customerService.CreateAsync(request);
+                        if (result.Success)
+                        {
+                            ConsoleUIHelper.DisplaySuccess(
+                                $"Customer {result.Data.Name} created successfully"
+                            );
+                        }
+                        else
+                        {
+                            ConsoleUIHelper.DisplayError(
+                                $"Failed to create customer: {result.Message}"
+                            );
+                        }
+                    }
+                );
+
+                ConsoleUIHelper.PressAnyKey();
+            }
+            catch (Exception ex)
+            {
+                ConsoleUIHelper.DisplayError($"An unexpected error occurred: {ex.Message}");
+                ConsoleUIHelper.PressAnyKey();
+            }
         }
 
         private async Task EditCustomer()

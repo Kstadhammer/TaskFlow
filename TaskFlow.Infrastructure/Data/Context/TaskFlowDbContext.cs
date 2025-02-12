@@ -80,5 +80,29 @@ public class TaskFlowDbContext : DbContext
             entity.Property(e => e.Name).IsRequired();
             entity.HasIndex(e => e.Name).IsUnique();
         });
+
+        // Seed default statuses
+        modelBuilder
+            .Entity<Status>()
+            .HasData(
+                new Status
+                {
+                    Id = 1,
+                    Name = "Not Started",
+                    Description = "Project has been created but work has not begun",
+                },
+                new Status
+                {
+                    Id = 2,
+                    Name = "Ongoing",
+                    Description = "Project is currently in progress",
+                },
+                new Status
+                {
+                    Id = 3,
+                    Name = "Completed",
+                    Description = "Project has been completed",
+                }
+            );
     }
 }

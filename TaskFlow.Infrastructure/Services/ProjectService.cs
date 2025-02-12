@@ -37,25 +37,76 @@ public class ProjectService
 
     public override async Task<ServiceResult<Project>> CreateAsync(CreateProjectRequest request)
     {
+        using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
+            // Validate request
+            if (request == null)
+                return ServiceResult<Project>.Error("Project request cannot be null");
+
             var validation = _projectFactory.ValidateCreate(request);
             if (!validation.IsValid)
-                return ServiceResult<Project>.Error(string.Join(", ", validation.Errors));
+                return ServiceResult<Project>.Error(
+                    $"Validation failed: {string.Join(", ", validation.Errors)}"
+                );
 
+            // Additional validations
+            if (request.StartDate > request.EndDate)
+                return ServiceResult<Project>.Error("Start date cannot be later than end date");
+
+            if (request.TotalPrice < 0)
+                return ServiceResult<Project>.Error("Total price cannot be negative");
+
+            // Create entity
             var entity = _projectFactory.CreateEntity(request);
 
+            // Check for duplicate project number
             if (await _projectRepository.ProjectNumberExistsAsync(entity.ProjectNumber))
-                return ServiceResult<Project>.Error("Project number already exists");
+                return ServiceResult<Project>.Error(
+                    $"Project number {entity.ProjectNumber} already exists"
+                );
 
+            // Verify related entities exist
+            var customerExists = await _context.Customers.FindAsync(request.CustomerId) != null;
+            if (!customerExists)
+                return ServiceResult<Project>.Error(
+                    $"Customer with ID {request.CustomerId} does not exist"
+                );
+
+            var projectManagerExists =
+                await _context.ProjectManagers.FindAsync(request.ProjectManagerId) != null;
+            if (!projectManagerExists)
+                return ServiceResult<Project>.Error(
+                    $"Project Manager with ID {request.ProjectManagerId} does not exist"
+                );
+
+            var serviceExists = await _context.Services.FindAsync(request.ServiceId) != null;
+            if (!serviceExists)
+                return ServiceResult<Project>.Error(
+                    $"Service with ID {request.ServiceId} does not exist"
+                );
+
+            var statusExists = await _context.Statuses.FindAsync(request.StatusId) != null;
+            if (!statusExists)
+                return ServiceResult<Project>.Error(
+                    $"Status with ID {request.StatusId} does not exist"
+                );
+
+            // Save project
             var project = await _projectRepository.AddAsync(entity);
             await _projectRepository.SaveChangesAsync();
 
+            await transaction.CommitAsync();
             return ServiceResult<Project>.Ok(project, "Project created successfully");
         }
         catch (Exception ex)
         {
-            return ServiceResult<Project>.Error($"Error creating project: {ex.Message}");
+            await transaction.RollbackAsync();
+            var errorMessage =
+                ex.InnerException != null
+                    ? $"Error creating project: {ex.Message}. Inner error: {ex.InnerException.Message}"
+                    : $"Error creating project: {ex.Message}";
+            return ServiceResult<Project>.Error(errorMessage);
         }
     }
 
