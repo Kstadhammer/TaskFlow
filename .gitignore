@@ -3,6 +3,10 @@ bin/
 obj/
 out/
 
+# Assignment files
+assignment.md
+response from teacher.md
+
 # Visual Studio files
 .vs/
 *.user
