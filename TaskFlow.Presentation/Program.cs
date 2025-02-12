@@ -28,7 +28,7 @@ ConsoleUIHelper.ShowLoadingSpinner(
 var serviceProvider = services.BuildServiceProvider();
 
 // Create database and run migrations
-ConsoleUIHelper.ShowLoadingSpinner(
+await ConsoleUIHelper.ShowLoadingSpinner(
     "Setting up database",
     async () =>
     {

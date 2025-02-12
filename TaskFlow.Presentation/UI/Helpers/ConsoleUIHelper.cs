@@ -1,4 +1,6 @@
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace TaskFlow.Presentation.UI.Helpers;
 
@@ -30,25 +32,61 @@ public static class ConsoleUIHelper
 
     public static void ShowLoadingSpinner(string message, Action action)
     {
+        ShowLoadingSpinnerInternal(
+                message,
+                () =>
+                {
+                    action();
+                    return Task.CompletedTask;
+                }
+            )
+            .Wait();
+    }
+
+    public static async Task ShowLoadingSpinner(string message, Func<Task> action)
+    {
+        await ShowLoadingSpinnerInternal(message, action);
+    }
+
+    private static async Task ShowLoadingSpinnerInternal(string message, Func<Task> action)
+    {
         Console.Write($"{message} ");
         var spinner = new[] { '|', '/', '-', '\\' };
         var spinnerPos = Console.CursorLeft;
-        var spinnerThread = new Thread(() =>
-        {
-            int counter = 0;
-            while (true)
-            {
-                Console.CursorLeft = spinnerPos;
-                Console.Write(spinner[counter % spinner.Length]);
-                Thread.Sleep(100);
-                counter++;
-            }
-        });
+        var cancellationTokenSource = new CancellationTokenSource();
 
-        spinnerThread.Start();
-        action.Invoke();
-        spinnerThread.Interrupt();
-        Console.WriteLine("\nDone!");
+        var spinnerTask = Task.Run(
+            async () =>
+            {
+                int counter = 0;
+                while (!cancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    Console.CursorLeft = spinnerPos;
+                    Console.Write(spinner[counter % spinner.Length]);
+                    await Task.Delay(100, cancellationTokenSource.Token);
+                    counter++;
+                }
+            },
+            cancellationTokenSource.Token
+        );
+
+        try
+        {
+            await action();
+        }
+        finally
+        {
+            cancellationTokenSource.Cancel();
+            try
+            {
+                await spinnerTask;
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected when we cancel the spinner
+            }
+            Console.WriteLine("\nDone!");
+        }
     }
 
     public static void DrawBox(string title)
