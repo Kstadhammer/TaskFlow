@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskFlow.Core", "TaskFlow.Core\TaskFlow.Core.csproj", "{3D847544-8436-43C7-8830-003E845358EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskFlow.Infrastructure", "TaskFlow.Infrastructure\TaskFlow.Infrastructure.csproj", "{2BE88E04-D5E3-4827-8179-08F1526FAA4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskFlow.Presentation", "TaskFlow.Presentation\TaskFlow.Presentation.csproj", "{3143A79A-4015-4761-814A-532B82726448}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3D847544-8436-43C7-8830-003E845358EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D847544-8436-43C7-8830-003E845358EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D847544-8436-43C7-8830-003E845358EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D847544-8436-43C7-8830-003E845358EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BE88E04-D5E3-4827-8179-08F1526FAA4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BE88E04-D5E3-4827-8179-08F1526FAA4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BE88E04-D5E3-4827-8179-08F1526FAA4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BE88E04-D5E3-4827-8179-08F1526FAA4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3143A79A-4015-4761-814A-532B82726448}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3143A79A-4015-4761-814A-532B82726448}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3143A79A-4015-4761-814A-532B82726448}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3143A79A-4015-4761-814A-532B82726448}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
