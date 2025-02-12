@@ -1,15 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TaskFlow.Infrastructure;
-using TaskFlow.Presentation.UI;
+using TaskFlow.Presentation;
 
 var services = new ServiceCollection();
 
 // Configure SQLite
 var connectionString = "Data Source=taskflow.db";
-services.AddInfrastructure(connectionString);
 
-// Register MainMenu
-services.AddScoped<MainMenu>();
+// Register services
+services.AddInfrastructure(connectionString);
+services.AddPresentation();
 
 // Build service provider
 var serviceProvider = services.BuildServiceProvider();
