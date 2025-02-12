@@ -13,19 +13,29 @@ public static class MenuHelper
         do
         {
             Console.CursorVisible = false;
-            ConsoleHelper.DisplayHeader(title);
+            Console.Clear();
+
+            // Draw title in a box
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            ConsoleUIHelper.DrawBox(title);
+            Console.WriteLine();
+            Console.ResetColor();
 
             // Display all options
             for (int i = 0; i < optionsList.Count; i++)
             {
                 if (i == _selectedIndex)
                 {
-                    Console.BackgroundColor = ConsoleColor.Gray;
-                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.BackgroundColor = ConsoleColor.DarkCyan;
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write(" → "); // Add arrow for selected item
+                }
+                else
+                {
+                    Console.Write("   "); // Padding for non-selected items
                 }
 
                 Console.WriteLine($"{optionsList[i].Key}. {optionsList[i].Value}");
-
                 Console.ResetColor();
             }
 
