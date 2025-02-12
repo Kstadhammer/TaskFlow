@@ -1,11 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.IO;
+using Microsoft.Extensions.DependencyInjection;
 using TaskFlow.Infrastructure;
 using TaskFlow.Presentation;
+using TaskFlow.Presentation.UI;
 
 var services = new ServiceCollection();
 
-// Configure SQLite
-var connectionString = "Data Source=taskflow.db";
+// Configure SQLite database path
+var databasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "taskflow.db");
+var connectionString = $"Data Source={databasePath}";
 
 // Register services
 services.AddInfrastructure(connectionString);
